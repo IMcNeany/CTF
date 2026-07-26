@@ -50,12 +50,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2398372134
+  GlobalObjectIdHash: 575774974
   InScenePlacedSourceGlobalObjectIdHash: 3449242060
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
+  <InScenePlaced>k__BackingField: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
@@ -80,8 +81,10 @@ MonoBehaviour:
   priority: 10
   promptText: Interact
   autoInteractionCooldown: 0.5
+  interactOnce: 0
   despawnAfterInteraction: 0
   despawnDelay: 3
+  onStatDepletedEvent: {fileID: 0}
 --- !u!114 &1690690115919222836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,9 +163,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   NetworkTransformExpanded: 0
   AutoOwnerAuthorityTickOffset: 1
-  PositionInterpolationType: 0
+  PositionInterpolationType: 1
   RotationInterpolationType: 0
-  ScaleInterpolationType: 0
+  ScaleInterpolationType: 1
   PositionLerpSmoothing: 1
   PositionMaxInterpolationTime: 0.1
   RotationLerpSmoothing: 1
