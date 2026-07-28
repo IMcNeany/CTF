@@ -6,6 +6,7 @@
             <ui:Label name="coins-label" text="Coins: 0"/>
         </ui:VisualElement>
         <ui:VisualElement name="health-info-container">
+            <ui:ProgressBar name="player-jetpack-fuel-bar" low-value="0" high-value="100" value="100" class="blocks-progress-bar" style="background-color: rgba(0, 0, 0, 0);"/>
             <ui:ProgressBar value="63.8" title="my-progress" name="player-health-bar" class="blocks-progress-bar"/>
             <ui:ProgressBar name="player-stamina-bar" low-value="0" high-value="100" value="100" class="blocks-progress-bar"/>
         </ui:VisualElement>

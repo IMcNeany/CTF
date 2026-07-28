@@ -12,7 +12,9 @@ namespace Blocks.Gameplay.Core
         public static readonly int Health = Animator.StringToHash("Health");
         /// <summary>Hash for 'Stamina' (from Assets/Core/Data/PlayerStats.asset)</summary>
         public static readonly int Stamina = Animator.StringToHash("Stamina");
-        /// <summary>Hash for 'Coin' (from Assets/Platformer/Data/PlayerStats-Platformer.asset)</summary>
+        /// <summary>Hash for 'Coin' (from Assets/Extended/Data/PlayerStats-Extended.asset)</summary>
         public static readonly int Coin = Animator.StringToHash("Coin");
+        /// <summary>Hash for 'JetPackFuel' (from Assets/Extended/Data/PlayerStats-Extended.asset)</summary>
+        public static readonly int JetPackFuel = Animator.StringToHash("JetPackFuel");
     }
 }
