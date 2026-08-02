@@ -26,6 +26,8 @@ GameObject:
   - component: {fileID: 6871827320169138264}
   - component: {fileID: 1390870495292615358}
   - component: {fileID: 6726926906507702785}
+  - component: {fileID: 6683160098442774375}
+  - component: {fileID: 4307124001054469329}
   m_Layer: 3
   m_Name: '[BB] PlatformerPlayer'
   m_TagString: Player
@@ -48,7 +50,6 @@ Transform:
   m_Children:
   - {fileID: 8338988566280778637}
   - {fileID: 4118176768871113131}
-  - {fileID: 6778715201801098763}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!143 &4416926081852918491
@@ -500,6 +501,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: Blocks.Gameplay.Core::Blocks.Gameplay.Core.NamePlateAddon
   nameDisplayCanvas: {fileID: 78353878671965719}
   nameDisplayText: {fileID: 167947500075464936}
+--- !u!114 &6683160098442774375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4416926081852918481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6833641ccb03f24c84dc35948fcf129, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blocks.Gameplay.Extended::Blocks.Gameplay.Extended.JetPackLocomotionAbility
+  fuelCost: 10
+  acceleration: 15
+  deceleration: 25
+  moveSpeed: 6
+  flyAcceleration: 20
+  maxFlySpeed: 10
+--- !u!114 &4307124001054469329
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4416926081852918481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0fee8b40c0233fc4d9f4c27dcecb451d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blocks.Gameplay.Extended::Blocks.Gameplay.Extended.JetPackAddon
+  ShowTopMostFoldoutHeaderGroup: 1
+  jetpackAbility: {fileID: 6683160098442774375}
+  jetpackVisuals: {fileID: 6444920883579428909}
+  onJetpackPressed: {fileID: 11400000, guid: 84375de8d548d4a43a42608cffd89549, type: 2}
+  onJetpackReleased: {fileID: 11400000, guid: 4c295680fb10f4080ae6688f6a96a009, type: 2}
+  startEffectPrefab: {fileID: 1413520483008952669, guid: 3783fc7c5119841529d57b6206e27bf0, type: 3}
+  ribbonEffectPrefab: {fileID: 1891972527774278, guid: 4d35711ba17dcd4409264568d9155360, type: 3}
+  stopEffectPrefab: {fileID: 1413520483008952669, guid: 3783fc7c5119841529d57b6206e27bf0, type: 3}
+  thrusterLeft: {fileID: 4962941268271063297}
+  thrusterRight: {fileID: 123988782333924896}
+  shakeIntensity: 1
+  shakeDuration: 0.2
 --- !u!1 &8338988566280778634
 GameObject:
   m_ObjectHideFlags: 0
@@ -715,7 +758,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3893294197879345259}
+    m_TransformParent: {fileID: 4118176768871113131}
     m_Modifications:
     - target: {fileID: 249370089276975292, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
       propertyPath: m_Name
@@ -739,15 +782,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 294933189878390426, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 294933189878390426, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 294933189878390426, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 294933189878390426, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -766,6 +809,21 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
+--- !u!4 &123988782333924896 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6610574518306741937, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
+  m_PrefabInstance: {fileID: 6486597040159164561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4962941268271063297 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2223350405912717712, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
+  m_PrefabInstance: {fileID: 6486597040159164561}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6444920883579428909 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 249370089276975292, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
+  m_PrefabInstance: {fileID: 6486597040159164561}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6778715201801098763 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 294933189878390426, guid: d2629fa7ed526ff43ba4a1387460a593, type: 3}
@@ -1158,6 +1216,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6302730393651566045, guid: 36325fbf6fce643af8adbb389f17bce6, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 6778715201801098763}
     - targetCorrespondingSourceObject: {fileID: 3118806074633428763, guid: 36325fbf6fce643af8adbb389f17bce6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1280831302287254540}

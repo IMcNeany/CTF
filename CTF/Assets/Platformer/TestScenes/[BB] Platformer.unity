@@ -31600,7 +31600,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3520246295310141715, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.8
+      value: 7.64
       objectReference: {fileID: 0}
     - target: {fileID: 3520246295310141715, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -31636,7 +31636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7600177562065403824, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
       propertyPath: m_Name
-      value: Pfb_block_1x2x1_solidGlow (7)
+      value: SizeChanger
       objectReference: {fileID: 0}
     - target: {fileID: 7600177562065403824, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -31654,6 +31654,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7600177562065403824, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1169113936}
+    - targetCorrespondingSourceObject: {fileID: 7600177562065403824, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1169113937}
+    - targetCorrespondingSourceObject: {fileID: 7600177562065403824, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1169113939}
+    - targetCorrespondingSourceObject: {fileID: 7600177562065403824, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1169113938}
   m_SourcePrefab: {fileID: 100100000, guid: 6eca26b464691914291ceaef31a7c48d, type: 3}
 --- !u!4 &785395580 stripped
 Transform:
@@ -44989,6 +44998,96 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.012844, y: 1.0128442, z: 1.0128441}
   m_Center: {x: -1.000001, y: 0.49999994, z: -0.4999971}
+--- !u!114 &1169113937
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169113932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2061647854
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  <InScenePlaced>k__BackingField: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &1169113938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169113932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57af20e8f2285d142b4d3ec1d634204e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blocks.Gameplay.Extended::Blocks.Gameplay.Extended.ChangeSizeEffect
+  ShowTopMostFoldoutHeaderGroup: 1
+  targetScale: {x: 2, y: 2, z: 2}
+  transitionDuration: 0.5
+  scaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  resetOnNextInteraction: 0
+  priority: 0
+  sizeChangeVFX: {fileID: 1784979674055767841, guid: 97442867c93b8496c826100a3164b476, type: 3}
+  sizeChangeSound: {fileID: 11400000, guid: bfec68d58a412fa4fb63e149caa5b3e5, type: 2}
+--- !u!114 &1169113939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1169113932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bcc6ff8ae4a447cd9b29f6dd35c9346, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Blocks.Gameplay.Core::Blocks.Gameplay.Core.ModularInteractable
+  ShowTopMostFoldoutHeaderGroup: 1
+  triggerMode: 2
+  priority: 0
+  promptText: Interact
+  autoInteractionCooldown: 0.5
+  interactOnce: 0
+  despawnAfterInteraction: 0
+  despawnDelay: 3
+  onStatDepletedEvent: {fileID: 11400000, guid: aced99a6f7f354e5c87c8fab171c4c31, type: 2}
 --- !u!1001 &1170128122
 PrefabInstance:
   m_ObjectHideFlags: 0

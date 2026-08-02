@@ -18,4 +18,5 @@ MonoBehaviour:
   - {fileID: 8088137118841385260, guid: 7e8d6ff5c031e43ca9b99f184d50cb00, type: 3}
   - {fileID: 8088137118841385260, guid: 2f90610f40a074d3c876064a9b376b30, type: 3}
   - {fileID: 8088137118841385260, guid: b91f818a9664bfe44b2dcec2165eae39, type: 3}
+  - {fileID: 8088137118841385260, guid: a20fe4e1dc3cce34f87eee80569be6ea, type: 3}
   defaultWeaponIndex: 0

@@ -3,7 +3,9 @@
     "rootNamespace": "Blocks.Gameplay.Extended",
     "references": [
         "GUID:ef87a43ecdba048edb51f3a3e5f7c971",
-        "GUID:1491147abca9d7d4bb7105af628b223e"
+        "GUID:1491147abca9d7d4bb7105af628b223e",
+        "GUID:3e40dc395626b4d2eb45571a9dbe52c0",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
