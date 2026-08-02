@@ -53,6 +53,13 @@ namespace Blocks.Gameplay.Core
             NetworkVariableReadPermission.Everyone,
             NetworkVariableWritePermission.Owner);
 
+        //Networked Variable for the Team
+        // Everyone can read, only the owner can write directly
+        private readonly NetworkVariable<byte> m_Team = new NetworkVariable<byte>(
+            0,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Owner);
+
         /// <summary>
         /// Gets the current player name string.
         /// </summary>
@@ -68,6 +75,12 @@ namespace Blocks.Gameplay.Core
         /// </summary>
         public bool IsActive => LifeState == PlayerLifeState.InitialSpawn || LifeState == PlayerLifeState.Respawned;
 
+        /// <summary>
+        /// Get the current player Team
+        /// </summary>
+        public byte Team => m_Team.Value;
+   
+
         #endregion
 
         #region Events
@@ -82,6 +95,12 @@ namespace Blocks.Gameplay.Core
         /// </summary>
         public event Action<PlayerLifeState> OnLifeStateChanged;
 
+
+        /// <summary>
+        /// Event raised when the player's team changes
+        /// </summary>
+        public event Action<byte> OnTeamChanged;
+
         #endregion
 
         #region Unity Methods
@@ -91,6 +110,7 @@ namespace Blocks.Gameplay.Core
             // Subscribe to value changes to trigger the local event
             m_NetworkedPlayerName.OnValueChanged += HandleNameChanged;
             m_LifeState.OnValueChanged += HandleLifeStateChanged;
+            m_Team.OnValueChanged += HandleTeamChanged;
 
             // For late-joining clients, network variables may already have values set
             // Trigger events immediately to ensure subscribers receive the current state
@@ -101,12 +121,16 @@ namespace Blocks.Gameplay.Core
 
             // Always broadcast initial life state to ensure all systems are synchronized
             OnLifeStateChanged?.Invoke(m_LifeState.Value);
+
+            // Broadcast initial team to ensure all systems are synchronized
+            OnTeamChanged?.Invoke(m_Team.Value);
         }
 
         public override void OnNetworkDespawn()
         {
             m_NetworkedPlayerName.OnValueChanged -= HandleNameChanged;
             m_LifeState.OnValueChanged -= HandleLifeStateChanged;
+            m_Team.OnValueChanged -= HandleTeamChanged;
         }
 
         #endregion
@@ -153,6 +177,25 @@ namespace Blocks.Gameplay.Core
             }
         }
 
+        /// <summary>
+        /// Sets the player's team
+        /// if called by owner, it sets the value directly
+        /// if called by non-owner (e.g., Server) it sends an RPC to the owner to set it
+        /// </summary>
+        /// <param name="teamIndex"> the new team to assign </param>
+        public void SetTeam(byte teamIndex)
+        {
+            if (IsOwner)
+            {
+                m_Team.Value = teamIndex;
+            }
+            else
+            {
+                SetTeamRpc(teamIndex);
+            }
+        }
+
+
         #endregion
 
         #region RPCs
@@ -179,6 +222,18 @@ namespace Blocks.Gameplay.Core
             m_LifeState.Value = newState;
         }
 
+
+        /// <summary>
+        /// RPC sent to the owner to set the life state.
+        ///  Required because network variables with Owner write permission can only be set by the owner.
+        /// </summary>
+        /// <param name="teamIndex"> The new team to assign </param>
+        [Rpc(SendTo.Owner)]
+        private void SetTeamRpc(byte teamIndex)
+        {
+            m_Team.Value = teamIndex;
+        }
+
         #endregion
 
         #region Private Methods
@@ -199,6 +254,11 @@ namespace Blocks.Gameplay.Core
             {
                 onPlayerStateChangedGlobal.Raise(new PlayerStatePayload { playerId = OwnerClientId, newState = newState, oldState = oldState });
             }
+        }
+
+        private void HandleTeamChanged(byte oldTeam, byte newTeam)
+        {
+            OnTeamChanged?.Invoke(newTeam);
         }
 
         #endregion

@@ -52,6 +52,7 @@ namespace Blocks.Gameplay.Core
         private Rigidbody[] m_RagdollRigidbodies;
         private Collider[] m_RagdollColliders;
         private CorePlayerManager m_PlayerManager;
+        private CorePlayerState m_PlayerState;
 
         #endregion
 
@@ -93,13 +94,25 @@ namespace Blocks.Gameplay.Core
         /// </summary>
         public void OnPlayerSpawn()
         {
+            m_PlayerState = m_PlayerManager.GetComponent<CorePlayerState>();
+            if (m_PlayerState != null)
+            {
+                m_PlayerState.OnTeamChanged += HandleTeamChanged;
+            }
+
             ApplyMaterialSet();
         }
 
         /// <summary>
         /// Called when the player despawns. Currently performs no cleanup operations.
         /// </summary>
-        public void OnPlayerDespawn() { }
+        public void OnPlayerDespawn() 
+        {
+            if (m_PlayerState != null)
+            {
+                m_PlayerState.OnTeamChanged -= HandleTeamChanged;
+            }
+        }
 
         #endregion
 
@@ -116,9 +129,18 @@ namespace Blocks.Gameplay.Core
                 return;
             }
 
-            // Use modulo to distribute material sets evenly across clients
-            ulong clientId = m_PlayerManager.OwnerClientId;
-            int index = (int)(clientId % (ulong)materialSets.Count);
+            // Get team index from CorePlayerState for consistent team colors
+            int index = 0;
+            if (m_PlayerState != null)
+            {
+                index = m_PlayerState.Team % materialSets.Count;
+            }
+            else
+            {
+                // Fallback to client ID if no player state (shouldn't happen)
+                ulong clientId = m_PlayerManager.OwnerClientId;
+                index = (int)(clientId % (ulong)materialSets.Count);
+            }
 
             PlayerMaterialSet selectedSet = materialSets[index];
 
@@ -229,6 +251,15 @@ namespace Blocks.Gameplay.Core
             }
         }
 
+
+        /// <summary>
+        /// When the Player team changes handle updates to any visuals
+        /// </summary>
+        /// <param name="newTeam"></param>
+        private void HandleTeamChanged(byte newTeam)
+        {
+            ApplyMaterialSet();
+        }
         #endregion
     }
 }

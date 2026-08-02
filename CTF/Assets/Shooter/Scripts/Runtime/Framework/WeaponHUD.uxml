@@ -1,5 +1,10 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/Shooter/Scripts/Runtime/Framework/WeaponHUD.uss?fileID=7433441132597879392&amp;guid=bbc435f537f5943b29f02366a419c599&amp;type=3#WeaponHUD"/>
+
+    <ui:VisualElement name="team-info-container">
+        <ui:Label name="team-name-label" text="Team Alpha"/>
+        <ui:VisualElement name="team-player-list"/>
+    </ui:VisualElement>
     <ui:VisualElement name="weapon-info-container">
         <ui:Label name="weapon-type-label" text="Weapon Name"/>
         <ui:Image name="weapon-icon"/>

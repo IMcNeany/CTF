@@ -3,6 +3,7 @@ using System.Collections;
 using Blocks.Gameplay.Core;
 using UnityEngine.UIElements;
 using Image = UnityEngine.UI.Image;
+using Unity.Netcode;
 
 namespace Blocks.Gameplay.Shooter
 {
@@ -36,6 +37,10 @@ namespace Blocks.Gameplay.Shooter
         [Tooltip("UGUI image component for displaying reload progress indicator.")]
         [SerializeField] private Image weaponReload;
 
+        [Header("Team Display")]
+        [Tooltip("Names for each team (index 0 = team 0, etc.)")]
+        [SerializeField] private string[] teamNames = { "Team Blue", "Team Orange" };
+
         private Coroutine m_ReloadCoroutine;
         private Coroutine m_MessageCoroutine;
         private Coroutine m_ReticleCooldownCoroutine;
@@ -46,6 +51,13 @@ namespace Blocks.Gameplay.Shooter
         private ProgressBar m_PlayerAmmoBar;
         private VisualElement m_PlayerReticle;
         private WeaponData m_CurrentWeaponData;
+
+        // Team display references
+        private Label m_TeamNameLabel;
+        private VisualElement m_TeamPlayerList;
+        private CorePlayerState m_LocalPlayerState;
+        private Coroutine m_TeamUpdateCoroutine;
+        private const float k_TeamUpdateInterval = 1.5f;
 
         #endregion
 
@@ -61,6 +73,13 @@ namespace Blocks.Gameplay.Shooter
 
             UpdateWeaponReticleAndIcon(onWeaponChanged.LastValue);
             UpdateReticleVisibility(onAimingStateChanged.LastValue);
+
+            m_LocalPlayerState = GetComponentInParent<CorePlayerState>();
+            if (m_LocalPlayerState != null)
+            {
+                UpdateTeamDisplay();
+                m_TeamUpdateCoroutine = StartCoroutine(TeamUpdateCoroutine());
+            }
         }
 
         private void LateUpdate()
@@ -108,6 +127,13 @@ namespace Blocks.Gameplay.Shooter
             onWeaponSpreadChanged.UnregisterListener(UpdateReticleSpread);
             onWeaponChanged.UnregisterListener(UpdateWeaponReticleAndIcon);
             onAimingStateChanged.UnregisterListener(UpdateReticleVisibility);
+
+            // Stop team update coroutine
+            if (m_TeamUpdateCoroutine != null)
+            {
+                StopCoroutine(m_TeamUpdateCoroutine);
+                m_TeamUpdateCoroutine = null;
+            }
         }
 
         protected override void QueryHUDElements(VisualElement root)
@@ -118,6 +144,9 @@ namespace Blocks.Gameplay.Shooter
             m_PlayerAmmoBar = root.Q<ProgressBar>("player-ammo-bar");
             m_PlayerReticle = root.Q<VisualElement>("player-reticle");
             m_WeaponIcon = root.Q<UnityEngine.UIElements.Image>("weapon-icon");
+            //team labels
+            m_TeamNameLabel = root.Q<Label>("team-name-label");
+            m_TeamPlayerList = root.Q<VisualElement>("team-player-list");
         }
 
         protected override void SetHUDDefaults()
@@ -288,6 +317,81 @@ namespace Blocks.Gameplay.Shooter
             }
             weaponReload.fillAmount = 1;
             weaponReload.gameObject.SetActive(false);
+        }
+
+
+        /// <summary>
+        /// Update the Teams
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator TeamUpdateCoroutine()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(k_TeamUpdateInterval);
+                UpdateTeamDisplay();
+            }
+        }
+
+
+        /// <summary>
+        /// Updates the team display with the teams
+        /// </summary>
+        private void UpdateTeamDisplay()
+        {
+            if (m_LocalPlayerState == null) return;
+
+            byte localTeam = m_LocalPlayerState.Team;
+
+            if (m_TeamNameLabel != null)
+            {
+                if (localTeam < teamNames.Length)
+                {
+                    m_TeamNameLabel.text = teamNames[localTeam];
+                }
+                else
+                {
+                    m_TeamNameLabel.text = $"Team {localTeam + 1}";
+                }
+            }
+
+            if (m_TeamPlayerList == null || NetworkManager.Singleton == null) return;
+
+            m_TeamPlayerList.Clear();
+
+            foreach (var spawnedObject in NetworkManager.Singleton.SpawnManager.SpawnedObjectsList)
+            {
+                if (spawnedObject == null) continue;
+
+                if (spawnedObject.TryGetComponent<CorePlayerState>(out var playerState))
+                {
+                    if (playerState.Team == localTeam)
+                    {
+                        var playerLabel = new Label(GetPlayerName(playerState));
+                        playerLabel.AddToClassList("team-player-item");
+                        m_TeamPlayerList.Add(playerLabel);
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Get the player's name from the corePlayerState
+        /// </summary>
+        /// <param name="playerState">The player state of the current Player </param>
+        /// <returns></returns>
+        private string GetPlayerName(CorePlayerState playerState)
+        {
+            if (playerState == null) return "Unknown";
+
+            string name = playerState.PlayerName;
+            if (!string.IsNullOrEmpty(name))
+            {
+                return name;
+            }
+
+            return $"Player-{playerState.OwnerClientId}";
         }
 
         #endregion

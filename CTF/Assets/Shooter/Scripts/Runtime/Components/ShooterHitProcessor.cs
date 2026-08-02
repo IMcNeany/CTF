@@ -64,6 +64,19 @@ namespace Blocks.Gameplay.Shooter
                 return;
             }
 
+            // Prevent friendly fire - check if attacker is on the same team
+            if (corePlayerState != null)
+            {
+                var attackerObject = NetworkManager.Singleton?.SpawnManager?.GetPlayerNetworkObject(info.attackerId);
+                if (attackerObject != null && attackerObject.TryGetComponent<CorePlayerState>(out var attackerState))
+                {
+                    if (attackerState.Team == corePlayerState.Team)
+                    {
+                        return; // Same team, no damage
+                    }
+                }
+            }
+
             float finalDamage = CalculateDamage(info);
             coreStats.ModifyStat(StatKeys.Health, -finalDamage, info.attackerId, ModificationSource.Damage);
 

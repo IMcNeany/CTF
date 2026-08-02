@@ -58,6 +58,10 @@ namespace Blocks.Gameplay.Core
         [Tooltip("Sound effect played during respawn countdown timer ticks.")]
         [SerializeField] private SoundDef respawnTimerSFX;
 
+        [Header("Teams")]
+        [Tooltip("The Number of teams available")]
+        [SerializeField] private int numberOfTeams = 2;
+
         private SessionObserver m_SessionObserver;
         private const string k_PlayerNameKey = "_player_name";
 
@@ -198,6 +202,7 @@ namespace Blocks.Gameplay.Core
                 if (playerState != null)
                 {
                     playerState.SetPlayerName(playerName);
+                    AssignTeam(playerState, NetworkManager.Singleton.LocalClientId);
                 }
                 else
                 {
@@ -611,6 +616,17 @@ namespace Blocks.Gameplay.Core
             root.style.display = DisplayStyle.None;
         }
 
+        /// <summary>
+        /// Assign a client to a team
+        /// </summary>
+        /// <param name="playerState">Client Player state </param>
+        /// <param name="clientId"> Connected client ID </param>
+        private void AssignTeam(CorePlayerState playerState, ulong clientId)
+        {
+            if (playerState == null || numberOfTeams <= 0) return;
+            byte teamIndex = (byte)(clientId % (ulong)numberOfTeams);
+            playerState.SetTeam(teamIndex);
+        }
         #endregion
     }
 }
