@@ -1,10 +1,12 @@
-using UnityEngine;
-using Unity.Netcode;
-using System.Collections;
-using UnityEngine.UIElements;
 using Blocks.Sessions.Common;
-using Unity.Services.Multiplayer;
+using CTF;
+using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.Services.Multiplayer;
+using UnityEditor.PackageManager;
+using UnityEngine;
+using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
 namespace Blocks.Gameplay.Core
@@ -223,8 +225,10 @@ namespace Blocks.Gameplay.Core
                 // Set spawn position and rotation based on client ID
                 if (localPlayer.TryGetComponent<CoreMovement>(out var movement))
                 {
-                    Vector3 spawnPos = GetSpawnPosition(NetworkManager.Singleton.LocalClientId);
-                    int index = GetSpawnIndex(NetworkManager.Singleton.LocalClientId);
+                    var playerState = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<CorePlayerState>();
+                    Vector3 spawnPos = GetSpawnPosition(NetworkManager.Singleton.LocalClientId, playerState.Team);
+
+                    int index = GetSpawnIndex(NetworkManager.Singleton.LocalClientId, playerState.Team);
                     if (index >= 0 && spawnPoints != null && spawnPoints.Count > index)
                     {
                         movement.transform.rotation = spawnPoints[index].rotation;
@@ -300,15 +304,19 @@ namespace Blocks.Gameplay.Core
             // Set spawn position and rotation based on client ID
             if (localPlayer.TryGetComponent<CoreMovement>(out var movement))
             {
-                Vector3 spawnPos = GetSpawnPosition(NetworkManager.Singleton.LocalClientId);
-                int index = GetSpawnIndex(NetworkManager.Singleton.LocalClientId);
-                if (index >= 0 && spawnPoints != null && spawnPoints.Count > index)
+                var playerState = NetworkManager.Singleton.LocalClient.PlayerObject.GetComponent<CorePlayerState>();
+                if (playerState != null)
                 {
-                    movement.transform.rotation = spawnPoints[index].rotation;
-                }
+                    Vector3 spawnPos = GetSpawnPosition(NetworkManager.Singleton.LocalClientId, playerState.Team);
+                    int index = GetSpawnIndex(NetworkManager.Singleton.LocalClientId, playerState.Team);
+                    if (index >= 0 && spawnPoints != null && spawnPoints.Count > index)
+                    {
+                        movement.transform.rotation = spawnPoints[index].rotation;
+                    }
 
-                movement.SetPosition(spawnPos);
-                movement.ResetMovementForces();
+                    movement.SetPosition(spawnPos);
+                    movement.ResetMovementForces();
+                }
             }
             else
             {
@@ -445,7 +453,7 @@ namespace Blocks.Gameplay.Core
             var coreMovement = playerState.GetComponent<CoreMovement>();
             if (coreMovement != null)
             {
-                int spawnIndex = GetRandomSpawnIndex();
+                int spawnIndex = GetRandomSpawnIndex(playerState.Team);
                 if (spawnIndex >= 0 && spawnPoints != null && spawnPoints.Count > spawnIndex)
                 {
                     coreMovement.transform.rotation = spawnPoints[spawnIndex].rotation;
@@ -497,6 +505,83 @@ namespace Blocks.Gameplay.Core
             }
         }
 
+        /// <summary>
+        /// Calculates the spawn index based on ClientID modulo team spawn point count.
+        /// Used for initial spawning to distribute players evenly across spawn points.
+        /// </summary>
+        /// <param name="clientId">The client ID to calculate the spawn index for.</param>
+        /// <param name="team">The team used to find the Spawn points.</param>
+        /// <returns>The spawn point index, or -1 if no spawn points are configured.</returns>
+        private int GetSpawnIndex(ulong clientId, byte team)
+        {
+            if (spawnPoints == null || spawnPoints.Count == 0) return -1;
+
+            List<int> teamSpawnPoints = GetTeamSpawnPointIndexes(team);
+            int teamSpawnIndex = (int)(clientId % (ulong)teamSpawnPoints.Count);
+
+            return teamSpawnPoints[teamSpawnIndex];
+        }
+
+        /// <summary>
+        /// Get a random Spawn index that matches the passed in team
+        /// </summary>
+        /// <param name="team">The team index to match </param>
+        /// <returns>Index of chosen Spawn Point </returns>
+        private int GetRandomSpawnIndex(byte team)
+        {
+            if (spawnPoints == null || spawnPoints.Count == 0) return -1;
+
+            List<int> teamSpawnPoints = GetTeamSpawnPointIndexes(team);
+            int teamIndex = Random.Range(0, teamSpawnPoints.Count);
+            return teamSpawnPoints[teamIndex];
+        }
+
+        /// <summary>
+        /// Finds all of the spawnPoints indexes for a team
+        /// </summary>
+        /// <param name="team">Team to match the Spawn Points to</param>
+        /// <returns>List of Indexes matching the SpawnPoint indexes</returns>
+        private List<int> GetTeamSpawnPointIndexes(byte team)
+        {
+            List<int> teamSpawnPoints = new List<int>();
+            //sort by removing any that don't match the index
+            for (int i = 0; i < spawnPoints.Count; i++)
+            {
+                if (spawnPoints[i].TryGetComponent<ITeamMember>(out var teamMember))
+                {
+                    if (team == teamMember.TeamId)
+                    {
+                        teamSpawnPoints.Add(i);
+                    }
+                }
+            }
+            return teamSpawnPoints;
+        }
+
+        /// <summary>
+        /// Returns the world position for the given Client's Team assigned spawn point.
+        /// Defaults to Vector3.zero if no spawn points are set.
+        /// </summary>
+        /// <param name="clientId">The client ID to calculate the spawn index for.</param>
+        /// <param name="team">The Team to find the matching spawn point for. </param>
+        /// <returns>The world position of the assigned spawn point.</returns>
+        private Vector3 GetSpawnPosition(ulong clientId, byte team)
+        {
+            int index = GetSpawnIndex(clientId, team);
+            if (index == -1)
+            {
+                Debug.LogWarning("[GameManager] No spawn points configured. Using Vector3.zero as spawn position.", this);
+                return Vector3.zero;
+            }
+
+            if (spawnPoints[index] == null)
+            {
+                Debug.LogError($"[GameManager] Spawn point at index {index} is null. Using Vector3.zero as spawn position.", this);
+                return Vector3.zero;
+            }
+
+            return spawnPoints[index].position;
+        }
         /// <summary>
         /// Calculates the spawn index based on ClientID modulo spawn point count.
         /// Used for initial spawning to distribute players evenly across spawn points.
