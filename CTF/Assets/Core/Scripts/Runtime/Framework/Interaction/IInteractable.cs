@@ -42,5 +42,6 @@ public enum InteractionTriggerMode
     OnFocusEnter, // Triggered automatically when the object gains focus.
     OnCharacterControllerHit, // Triggered automatically when a CharacterController collides with it.
     OnTriggerEnter, // Triggered by a standard physics trigger collision.
-    OnRigidbodyCollision // Triggered by a standard physics collision.
+    OnRigidbodyCollision, // Triggered by a standard physics collision.
+    OnButtonHold, // Triggered by player Hold input.
 }

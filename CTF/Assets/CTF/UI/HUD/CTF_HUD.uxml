@@ -1,0 +1,8 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/CTF/UI/HUD/CFT_HUD.uss?fileID=7433441132597879392&amp;guid=b920894e18ca46047b0d7a5e87d18bee&amp;type=3#CFT_HUD"/>
+    <ui:VisualElement name="Panel" class="panel" style="flex-grow: 1;"/>
+    <ui:VisualElement style="flex-grow: 1; align-items: center;">
+        <ui:Label text="Interact..." name="InteractionText" style="-unity-text-align: upper-center; -unity-font-style: bold; font-size: 20px; padding-top: 2px; padding-bottom: 2px; margin-bottom: 0;"/>
+        <ui:ProgressBar value="0.5" title="" name="InteractionProgressBar" high-value="1" style="background-size: 100% 100%; -unity-background-scale-mode: stretch-to-fill; width: 25%; margin-top: 2px;"/>
+    </ui:VisualElement>
+</ui:UXML>

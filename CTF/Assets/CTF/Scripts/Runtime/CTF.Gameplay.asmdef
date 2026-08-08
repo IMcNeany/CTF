@@ -1,3 +1,16 @@
 {
-	"name": "CTF.Gameplay"
+    "name": "CTF.Gameplay",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ef87a43ecdba048edb51f3a3e5f7c971"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

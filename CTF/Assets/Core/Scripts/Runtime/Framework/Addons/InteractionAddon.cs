@@ -26,9 +26,24 @@ namespace Blocks.Gameplay.Core
         [Tooltip("A global cooldown in seconds between interactions to prevent spamming.")]
         [SerializeField] private float interactionCooldown = 0.2f;
 
-        [Header("Listening To")]
+        [Tooltip("The time the player needs to hold down the interact button.")]
+        [SerializeField] private float interactionHoldDuration = 2f;
+
+        [Header("Events")]
+        [Tooltip("Event raised to update the interaction progress on the HUD")]
+        [SerializeField] private FloatEvent InteractionProgressEvent;
+
+        [Tooltip("Event raised to update the interaction prompts on the HUD")]
+        [SerializeField] private InteractionPromptEvent InteractionPromptEvent;
+
         [Tooltip("GameEvent raised when the player presses the interaction button.")]
         [SerializeField] private GameEvent onInteractPressed;
+
+        [Tooltip("GameEvent raised when the player completes the interaction Hold button.")]
+        [SerializeField] private GameEvent onInteractHoldStarted;
+
+        [Tooltip("GameEvent raised when the player completes the interaction Hold button.")]
+        [SerializeField] private GameEvent onInteractHoldReleased;
 
         /// <summary>
         /// Gets or sets a value indicating whether the interactor is currently enabled.
@@ -40,6 +55,8 @@ namespace Blocks.Gameplay.Core
         private IInteractable m_CurrentFocusedInteractable;
         private float m_CooldownTimer;
         private readonly Collider[] m_ProximityColliders = new Collider[20];
+        private float m_holdProgress = 0.0f;
+        private bool m_holdStarted = false;
 
         #endregion
 
@@ -61,7 +78,10 @@ namespace Blocks.Gameplay.Core
             if (m_PlayerManager.IsOwner)
             {
                 m_MainCamera = Camera.main;
+
                 onInteractPressed.RegisterListener(TryInteract);
+                onInteractHoldStarted.RegisterListener(TryStartHoldInteraction);
+                onInteractHoldReleased.RegisterListener(CancelHoldInteraction);
                 IsEnabled = true;
             }
             else
@@ -78,6 +98,8 @@ namespace Blocks.Gameplay.Core
             if (m_PlayerManager.IsOwner)
             {
                 onInteractPressed.UnregisterListener(TryInteract);
+                onInteractHoldStarted.UnregisterListener(TryStartHoldInteraction);
+                onInteractHoldReleased.UnregisterListener(CancelHoldInteraction);
                 ClearFocus();
             }
         }
@@ -116,6 +138,8 @@ namespace Blocks.Gameplay.Core
             }
 
             FindBestInteractable();
+
+            UpdateHoldInteraction();
         }
 
         /// <summary>
@@ -209,6 +233,36 @@ namespace Blocks.Gameplay.Core
                 {
                     m_CurrentFocusedInteractable.Interact(gameObject);
                 }
+
+                UpdatePrompt();
+            }
+        }
+
+        private void UpdatePrompt()
+        {
+            InteractionPromptEvent.Raise(new InteractionPromptState
+            {
+                ShowProgress = false,
+                Text = m_CurrentFocusedInteractable != null ? m_CurrentFocusedInteractable.InteractionPromptText : string.Empty,
+                Visible = m_CurrentFocusedInteractable != null
+            });
+
+            m_holdStarted = false;
+            m_holdProgress = 0.0f;
+        }
+
+        private void UpdateHoldInteraction()
+        {
+            if(m_CurrentFocusedInteractable == null || m_CurrentFocusedInteractable.TriggerMode != InteractionTriggerMode.OnButtonHold || !m_holdStarted) return;
+            m_holdProgress += Time.deltaTime;
+            float holdProgress = m_holdProgress / interactionHoldDuration;
+            holdProgress = Mathf.Clamp01(holdProgress);
+
+            InteractionProgressEvent.Raise(m_holdProgress);
+
+            if(holdProgress >= interactionHoldDuration)
+            {
+                TryInteractHold();
             }
         }
 
@@ -225,6 +279,64 @@ namespace Blocks.Gameplay.Core
                 m_CurrentFocusedInteractable.Interact(gameObject);
                 m_CooldownTimer = interactionCooldown;
             }
+        }
+
+        private void TryInteractHold()
+        {
+            if (!IsEnabled || m_CooldownTimer > 0 || m_CurrentFocusedInteractable == null) return;
+
+            if (m_CurrentFocusedInteractable.TriggerMode == InteractionTriggerMode.OnButtonHold &&
+                m_CurrentFocusedInteractable.CanInteract(gameObject))
+            {
+                InteractionPromptEvent.Raise(new InteractionPromptState
+                {
+                    ShowProgress = false,
+                    Text = m_CurrentFocusedInteractable.InteractionPromptText,
+                    Visible = false
+                });
+
+                m_CurrentFocusedInteractable.Interact(gameObject);
+                m_CooldownTimer = interactionCooldown;
+                m_holdProgress = 0.0f;
+                m_holdStarted = false;
+
+            }
+        }
+
+        private void TryStartHoldInteraction()
+        {
+            if (!IsEnabled || m_CooldownTimer > 0 || m_CurrentFocusedInteractable == null) return;
+
+            if (m_CurrentFocusedInteractable.TriggerMode == InteractionTriggerMode.OnButtonHold &&
+               m_CurrentFocusedInteractable.CanInteract(gameObject))
+            {
+                m_holdProgress = 0.0f;
+                m_holdStarted = true;
+                //start interaction
+                InteractionPromptEvent.Raise( new InteractionPromptState
+                {
+                    ShowProgress = true,
+                    Text =  m_CurrentFocusedInteractable.InteractionPromptText,
+                    Visible = true
+                });
+            }
+        }
+
+        private void CancelHoldInteraction()
+        {
+            if (!IsEnabled || m_CooldownTimer > 0 || m_CurrentFocusedInteractable == null) return;
+
+            if (m_CurrentFocusedInteractable.TriggerMode != InteractionTriggerMode.OnButtonHold) return;
+            //any clean up like cancel UI
+            InteractionPromptEvent.Raise(new InteractionPromptState
+            {
+                ShowProgress = false,
+                Text = m_CurrentFocusedInteractable.InteractionPromptText,
+                Visible = true
+            });
+            m_holdProgress = 0.0f;
+            m_holdStarted = false;
+            InteractionProgressEvent.Raise(m_holdProgress);
         }
 
         #endregion

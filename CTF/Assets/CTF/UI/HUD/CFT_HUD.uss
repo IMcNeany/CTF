@@ -1,0 +1,24 @@
+:root {
+}
+
+#Panel {
+    background-color: rgba(255, 255, 255, 0);
+}
+
+
+
+.unity-progress-bar__progress {
+    border-left-color: rgb(0, 113, 16);
+    border-right-color: rgb(0, 113, 16);
+    border-top-color: rgb(0, 113, 16);
+    border-bottom-color: rgb(0, 113, 16);
+    border-top-width: 0.5px;
+    border-right-width: 0.5px;
+    border-bottom-width: 0.5px;
+    border-left-width: 0.5px;
+    background-color: rgb(0, 190, 27);
+}
+
+.unity-progress-bar__background {
+    background-color: rgba(3, 138, 65, 0.408);
+}

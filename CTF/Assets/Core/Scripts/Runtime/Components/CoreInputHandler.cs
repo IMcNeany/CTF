@@ -31,6 +31,10 @@ namespace Blocks.Gameplay.Core
         [SerializeField] private GameEvent onMenuPressed;
         [Tooltip("Raised when the dash button is pressed.")]
         [SerializeField] private GameEvent onDashPressed;
+        [Tooltip("Raised when the hold button is pressed.")]
+        [SerializeField] private GameEvent onHoldInputPressed;
+        [Tooltip("Raised when the hold button is Pressed.")]
+        [SerializeField] private GameEvent onHoldInputReleased;
 
         private GameplayInputSystem_Actions m_InputActions;
 
@@ -61,6 +65,25 @@ namespace Blocks.Gameplay.Core
             }
         }
 
+        public string GetCurrentKey(GameplayAction gameplayAction)
+        {
+            switch (gameplayAction)
+            {
+                case GameplayAction.None:
+                    return string.Empty;
+                case GameplayAction.Interact:
+                    return m_InputActions.Player.InteractHold.GetBindingDisplayString();
+                case GameplayAction.PrimaryAction:
+                    return m_InputActions.Player.PrimaryAction.GetBindingDisplayString();
+                case GameplayAction.Jump:
+                    return m_InputActions.Player.Jump.GetBindingDisplayString();
+                case GameplayAction.OpenMenu:
+                    return m_InputActions.Player.Menu.GetBindingDisplayString();
+                default:
+                    return string.Empty;
+            }
+        }
+
         #endregion
 
         #region Input Registration
@@ -85,6 +108,9 @@ namespace Blocks.Gameplay.Core
             m_InputActions.Player.Menu.performed += HandleMenuPressed;
 
             m_InputActions.Player.Dash.performed += HandleDashPressed;
+
+            m_InputActions.Player.InteractHold.started += HandleHoldInputPressed;
+            m_InputActions.Player.InteractHold.canceled += HandleHoldInputReleased;
         }
 
         private void UnregisterInputActions()
@@ -107,6 +133,9 @@ namespace Blocks.Gameplay.Core
             m_InputActions.Player.Menu.performed -= HandleMenuPressed;
 
             m_InputActions.Player.Dash.performed -= HandleDashPressed;
+
+            m_InputActions.Player.InteractHold.started -= HandleHoldInputPressed;
+            m_InputActions.Player.InteractHold.canceled -= HandleHoldInputReleased;
         }
 
         #endregion
@@ -123,6 +152,8 @@ namespace Blocks.Gameplay.Core
         private void HandleMenuPressed(InputAction.CallbackContext context) => onMenuPressed?.Raise();
         private void HandleDashPressed(InputAction.CallbackContext context)=> onDashPressed?.Raise();
 
+        private void HandleHoldInputPressed(InputAction.CallbackContext context) => onHoldInputPressed?.Raise();
+        private void HandleHoldInputReleased(InputAction.CallbackContext context) => onHoldInputReleased?.Raise();
         #endregion
     }
 }

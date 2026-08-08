@@ -33,7 +33,8 @@ namespace Blocks.Gameplay.Core
         /// Returns an empty string for interactions that are not triggered by a button press.
         /// </summary>
         public string InteractionPromptText =>
-            triggerMode == InteractionTriggerMode.OnButtonPress ? promptText : string.Empty;
+            (triggerMode == InteractionTriggerMode.OnButtonPress || triggerMode == InteractionTriggerMode.OnButtonHold) 
+            ? promptText : string.Empty;
 
         [Header("Interaction Settings")]
         [Tooltip("Defines how the interaction is triggered (e.g., on button press, collision, or gaining focus).")]
@@ -44,6 +45,9 @@ namespace Blocks.Gameplay.Core
 
         [Tooltip("The text that will be displayed on the UI when this interactable is in focus.")]
         [SerializeField] private string promptText = "Interact";
+
+        [Tooltip("The action to be subsituted into the prompt Text.")]
+        [SerializeField] private GameplayAction interactionInput = GameplayAction.None;
 
         [Tooltip("Cooldown in seconds between automatic interactions (e.g., for OnCollision) to prevent spamming.")]
         [SerializeField] private float autoInteractionCooldown = 0.5f;
